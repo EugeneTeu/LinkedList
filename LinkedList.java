@@ -213,7 +213,7 @@ class LinkedList<E> {
         ListNode<E> slowNode = _head;
         ListNode<E> fastNode = _head;
         while (fastNode.getNext() != null && 
-               fastNode.getNext().getNext() != null) {
+                fastNode.getNext().getNext() != null) {
             fastNode = fastNode.getNext().getNext();
             slowNode = slowNode.getNext();
         }
@@ -232,6 +232,92 @@ class LinkedList<E> {
             reverse();
             first.setNext(null);
             append(first);
+        }
+    }
+
+    void nonRecursiveReverse() {
+        if (isEmpty() || getSize() == 1) {
+            //do nothing
+        }
+        else {
+            ListNode<E> prev = null;
+            ListNode<E> curr = _head;
+            ListNode<E> next = curr.getNext();
+            while (curr.getNext().getNext() != null) {
+                curr.setNext(prev);
+                prev = curr;
+                curr = next;
+                next = next.getNext();
+            }
+            curr.setNext(prev);
+            next.setNext(curr);
+            _head = next;
+        }
+    }
+
+    boolean isPalindrome() {
+        //check if list is Character-typed
+        if (!(this.getFirst() instanceof Character)) {
+            return false;
+        }
+        else if (_head == null || _head.getNext() == null) {
+            return true;
+        }
+        else if (_head.getNext().getNext() == null) {
+            return _head.getElement().equals(_head.getNext().getElement());
+        }
+        else {
+            boolean result = true;
+            //find midpoint using O(n) algo
+            ListNode<E> midNode = _head;
+            ListNode<E> endNode = _head;
+            while (endNode.getNext() != null && 
+                   endNode.getNext().getNext() != null) {
+                endNode = endNode.getNext().getNext();
+                midNode = midNode.getNext();
+            }
+            //reverse the second half of the list
+            ListNode<E> curr = midNode.getNext();
+            ListNode<E> prev = null;
+            ListNode<E> next = curr.getNext();
+            while (curr.getNext().getNext() != null) {
+                curr.setNext(prev);
+                prev = curr;
+                curr = next;
+                next = next.getNext();
+            }
+            curr.setNext(prev);
+            next.setNext(curr);
+            midNode.setNext(next);
+            //start checking from head and mid
+            ListNode<E> front = _head;
+            while (front.getNext() != midNode) {
+                if (!front.getElement().equals(next.getElement())) {
+                    result = false;
+                    break;
+                }
+                front = front.getNext();
+                next = next.getNext();
+            }
+            if (result == true && next.getNext() != null) {
+                if (!next.getNext().getElement().equals(front.getNext().getElement())) {
+                    result = false;
+                }
+            }
+            //reverse the second half back to original
+            curr = midNode.getNext();
+            prev = null;
+            next = curr.getNext();
+            while (curr.getNext().getNext() != null) {
+                curr.setNext(prev);
+                prev = curr;
+                curr = next;
+                next = next.getNext();
+            }
+            curr.setNext(prev);
+            next.setNext(curr);
+            midNode.setNext(next);
+            return result;
         }
     }
 }
